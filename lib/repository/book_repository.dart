@@ -14,12 +14,13 @@ class BookRepository with ChangeNotifier {
       books.where((book) => book.isFavorite).toList();
 
   Future<void> fetchAllBooks() async {
+    var file_path = await getApplicationDocumentsDirectory();
     final response =
         await http.get(Uri.parse('https://escribo.com/books.json'));
 
     if (response.statusCode == 200) {
       final List<dynamic> data = json.decode(response.body);
-      _books = data.map((json) => Book.fromJson(json)).toList();
+      _books = data.map((json) => Book.fromJson(json, file_path)).toList();
 
       notifyListeners();
     } else {
@@ -31,13 +32,15 @@ class BookRepository with ChangeNotifier {
     final response = await http.get(Uri.parse(book.downloadUrl));
     final documentsDirectory = await getApplicationDocumentsDirectory();
     if (response.statusCode == 200) {
-      final sanitizedFilename = book.title.replaceAll(RegExp(r'[^\w\s]+'), '');
+      final fileNameWithoutSpaces = '${book.title.replaceAll(' ', '')}.epub';
 
-      final filePath = path.join(documentsDirectory.path, sanitizedFilename);
-      book.localSaved = filePath;
+      final filePath =
+          path.join(documentsDirectory.path, fileNameWithoutSpaces);
 
       File file = File(filePath);
+      book.local = file;
       await file.writeAsBytes(response.bodyBytes);
+      print(book.localSaved);
       notifyListeners();
       print('EPUB file downloaded and saved at: $filePath');
     } else {

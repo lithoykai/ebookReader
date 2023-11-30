@@ -2,6 +2,7 @@ import 'package:ebooks/models/book.dart';
 import 'package:ebooks/repository/book_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:vocsy_epub_viewer/epub_viewer.dart';
 
 class BooksCover extends StatefulWidget {
   Book book;
@@ -14,26 +15,54 @@ class BooksCover extends StatefulWidget {
 class _BooksCoverState extends State<BooksCover> {
   bool loadingDownload = false;
   bool isEpubDownloaded(String downloadUrl) {
-    String filename = '${widget.book.title}.epub';
+    String filename = '${widget.book.title.replaceAll(' ', '')}.epub';
 
-    bool haveBook =
-        widget.book.localSaved?.contains(widget.book.title) ?? false;
+    bool haveBook = widget.book.localSaved?.existsSync() ?? false;
+    if (haveBook) {
+      haveBook = widget.book.localSaved!.path
+          .endsWith('${widget.book.title.replaceAll(' ', '')}.epub');
+    }
+
     return haveBook;
   }
 
   @override
   Widget build(BuildContext context) {
-    bool isDownloaded = isEpubDownloaded(widget.book.downloadUrl);
     return InkWell(
-      onTap: () {
-        loadingDownload = true;
-        Provider.of<BookRepository>(context, listen: false)
-            .downloadAndSaveEpub(widget.book)
-            .then((value) {
-          setState(() {
-            loadingDownload = false;
+      onTap: () async {
+        if (widget.book.localSaved?.path == null) {
+          loadingDownload = true;
+          Provider.of<BookRepository>(context, listen: false)
+              .downloadAndSaveEpub(widget.book)
+              .then((value) {
+            setState(() {
+              loadingDownload = false;
+            });
           });
-        });
+        } else {
+          VocsyEpub.setConfig(
+            themeColor: Theme.of(context).primaryColor,
+            identifier: "iosBook",
+            scrollDirection: EpubScrollDirection.ALLDIRECTIONS,
+            allowSharing: true,
+            enableTts: true,
+            nightMode: true,
+          );
+          // get current locator
+          VocsyEpub.locatorStream.listen((locator) {
+            print('LOCATOR: $locator');
+          });
+          print(widget.book.localSaved!.path.length);
+          await VocsyEpub.openAsset(
+            widget.book.localSaved!.path,
+            lastLocation: EpubLocator.fromJson({
+              "bookId": "2239",
+              "href": "/OEBPS/ch06.xhtml",
+              "created": 1539934158390,
+              "locations": {"cfi": "epubcfi(/0!/4/4[simple_book]/2/2/6)"}
+            }),
+          );
+        }
       },
       splashColor: Theme.of(context).primaryColor,
       // borderRadius: BorderRadius.circular(15),

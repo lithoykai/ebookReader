@@ -28,7 +28,7 @@ class BookGridPage extends StatelessWidget {
             ),
             children: loadedBooks.map((book) {
               return loadedBooks.isEmpty
-                  ? Center(child: Text('Não há nenhum livro disponível'))
+                  ? const Center(child: Text('Não há nenhum livro disponível'))
                   : BooksCover(book);
             }).toList());
   }

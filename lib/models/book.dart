@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
 class Book with ChangeNotifier {
@@ -7,7 +9,7 @@ class Book with ChangeNotifier {
   String coverUrl;
   String downloadUrl;
   bool isFavorite = false;
-  String? localSaved;
+  File? localSaved;
 
   Book({
     required this.id,
@@ -16,6 +18,7 @@ class Book with ChangeNotifier {
     required this.coverUrl,
     required this.downloadUrl,
     this.isFavorite = false,
+    this.localSaved,
   });
 
   void toggleFavorite() {
@@ -23,13 +26,21 @@ class Book with ChangeNotifier {
     notifyListeners();
   }
 
-  factory Book.fromJson(Map<String, dynamic> json) {
+  set local(File localSaved) {
+    this.localSaved = localSaved;
+  }
+
+  factory Book.fromJson(Map<String, dynamic> json, Directory filePath) {
+    String filename = json['title'];
+
+    File file = File('${filePath.path}/${filename.replaceAll(' ', '')}.epub');
     return Book(
       id: json['id'],
       title: json['title'],
       author: json['author'],
       coverUrl: json['cover_url'],
       downloadUrl: json['download_url'],
+      localSaved: file.existsSync() ? file : null,
     );
   }
 
