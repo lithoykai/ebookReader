@@ -7,6 +7,7 @@ class Book with ChangeNotifier {
   String coverUrl;
   String downloadUrl;
   bool isFavorite = false;
+  String? localSaved;
 
   Book({
     required this.id,
@@ -17,7 +18,7 @@ class Book with ChangeNotifier {
     this.isFavorite = false,
   });
 
-  void _toggleFavorite() {
+  void toggleFavorite() {
     isFavorite = !isFavorite;
     notifyListeners();
   }

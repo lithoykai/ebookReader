@@ -13,9 +13,10 @@ class EbookMain extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Provider(
+    return ChangeNotifierProvider(
       create: (_) => BookRepository(),
       child: MaterialApp(
+        debugShowCheckedModeBanner: false,
         title: 'Ebook Reader',
         routes: {
           AppRoutes.HOME_PAGE: (ctx) => const HomePage(),
