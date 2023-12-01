@@ -4,7 +4,7 @@ import 'package:ebooks/utils/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-void main() {
+void main() async {
   runApp(const EbookMain());
 }
 
@@ -17,7 +17,7 @@ class EbookMain extends StatelessWidget {
       create: (_) => BookRepository(),
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        title: 'Ebook Reader',
+        title: 'eBook Reader',
         routes: {
           AppRoutes.HOME_PAGE: (ctx) => const HomePage(),
         },

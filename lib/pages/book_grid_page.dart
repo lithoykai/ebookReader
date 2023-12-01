@@ -6,7 +6,7 @@ import 'package:provider/provider.dart';
 
 class BookGridPage extends StatelessWidget {
   bool showFavoriteOnly;
-  BookGridPage(this.showFavoriteOnly);
+  BookGridPage(this.showFavoriteOnly, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -27,9 +27,7 @@ class BookGridPage extends StatelessWidget {
               mainAxisSpacing: 20,
             ),
             children: loadedBooks.map((book) {
-              return loadedBooks.isEmpty
-                  ? const Center(child: Text('Não há nenhum livro disponível'))
-                  : BooksCover(book);
+              return BooksCover(book);
             }).toList());
   }
 }

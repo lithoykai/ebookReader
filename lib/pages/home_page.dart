@@ -3,11 +3,6 @@ import 'package:ebooks/repository/book_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-enum FilterOptions {
-  Favorite,
-  All,
-}
-
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
@@ -25,56 +20,61 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Ebook Reader'),
-      ),
-      body: FutureBuilder(
-        future:
-            Provider.of<BookRepository>(context, listen: false).fetchAllBooks(),
-        builder: (context, snapashot) {
-          if (snapashot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          } else if (snapashot.error != null) {
-            return Center(
-              child: Text('Ocorreu um erro!'),
-            );
-          } else {
-            return SafeArea(
-              child: Column(
+        appBar: AppBar(
+          title: const Text('Ebook Reader'),
+        ),
+        body: SafeArea(
+          child: Column(
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      TextButton(
-                        onPressed: () {
-                          setState(() {
-                            _showFavoriteOnly = false;
-                          });
-                        },
-                        child: const Text(
-                          'Todos',
-                        ),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          setState(() {
-                            _showFavoriteOnly = true;
-                          });
-                        },
-                        child: const Text('Favoritos'),
-                      ),
-                    ],
+                  TextButton(
+                    onPressed: () {
+                      setState(() {
+                        _showFavoriteOnly = false;
+                      });
+                    },
+                    child: Text(
+                      'Todos',
+                      style: TextStyle(
+                          color: _showFavoriteOnly ? null : Colors.blue),
+                    ),
                   ),
-                  Expanded(
-                    child: BookGridPage(_showFavoriteOnly),
+                  TextButton(
+                    onPressed: () {
+                      setState(() {
+                        _showFavoriteOnly = true;
+                      });
+                    },
+                    child: Text(
+                      'Favoritos',
+                      style: TextStyle(
+                          color: _showFavoriteOnly ? Colors.blue : null),
+                    ),
                   ),
                 ],
               ),
-            );
-          }
-        },
-      ),
-    );
+              Expanded(
+                child: FutureBuilder(
+                  future: Provider.of<BookRepository>(context, listen: false)
+                      .fetchAllBooks(),
+                  builder: (context, snapashot) {
+                    if (snapashot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    } else if (snapashot.error != null) {
+                      return const Center(
+                        child: Text('Ocorreu um erro!'),
+                      );
+                    } else {
+                      return BookGridPage(_showFavoriteOnly);
+                    }
+                  },
+                ),
+              ),
+            ],
+          ),
+        ));
   }
 }
