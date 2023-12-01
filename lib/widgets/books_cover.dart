@@ -44,9 +44,35 @@ class _BooksCoverState extends State<BooksCover> {
     );
 
     VocsyEpub.locatorStream.listen((locator) async {
+      showLoadingDialog(context);
+
       await Store.saveMap(widget.book.id.toString(), jsonDecode(locator));
       widget.book.epubLocator = jsonDecode(locator);
+
+      Navigator.pop(context);
     });
+  }
+
+  void showLoadingDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return const Dialog(
+          child: Padding(
+            padding: EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CircularProgressIndicator(),
+                SizedBox(height: 16),
+                Text('Salvando última leitura...'),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -59,7 +85,7 @@ class _BooksCoverState extends State<BooksCover> {
           });
           try {
             await Provider.of<BookRepository>(context, listen: false)
-                .downloadAndSaveEpub(widget.book);
+                .downloadEpub(widget.book);
           } finally {
             setState(() {
               loadingDownload = false;

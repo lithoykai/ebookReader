@@ -13,15 +13,16 @@ class Book with ChangeNotifier {
   File? localSaved;
   Map<String, dynamic>? locator;
 
-  Book(
-      {required this.id,
-      required this.title,
-      required this.author,
-      required this.coverUrl,
-      required this.downloadUrl,
-      this.isFavorite = false,
-      this.localSaved,
-      this.locator});
+  Book({
+    required this.id,
+    required this.title,
+    required this.author,
+    required this.coverUrl,
+    required this.downloadUrl,
+    this.isFavorite = false,
+    this.localSaved,
+    this.locator,
+  });
 
   void _toggleFavorite() {
     isFavorite = !isFavorite;
@@ -50,18 +51,33 @@ class Book with ChangeNotifier {
   }
 
   factory Book.fromJson(
-      Map<String, dynamic> json, Directory filePath, bool? isFavorite) {
+    Map<String, dynamic> json,
+    Directory filePath,
+    bool? isFavorite,
+  ) {
     String filename = json['title'];
 
     File file = File('${filePath.path}/${filename.replaceAll(' ', '')}.epub');
     return Book(
-      id: json['id'],
-      title: json['title'],
-      author: json['author'],
-      coverUrl: json['cover_url'],
-      downloadUrl: json['download_url'],
+      id: json['id'] ?? '',
+      title: json['title'] ?? '',
+      author: json['author'] ?? '',
+      coverUrl: json['cover_url'] ?? '',
+      downloadUrl: json['download_url'] ?? '',
       localSaved: file.existsSync() ? file : null,
       isFavorite: isFavorite ?? false,
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'title': title,
+      'author': author,
+      'coverUrl': coverUrl,
+      'downloadUrl': downloadUrl,
+      'localSaved': localSaved?.path,
+      'isFavorite': isFavorite
+    };
   }
 }

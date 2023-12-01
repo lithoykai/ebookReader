@@ -23,18 +23,34 @@ class BookRepository with ChangeNotifier {
       var _filePath = await getApplicationDocumentsDirectory();
       _books = await Future.wait(data.map((json) async {
         var isFavorite = await Store.getBool(json['title']);
-        return Book.fromJson(
-          json,
-          _filePath,
-          isFavorite,
-        );
+        return Book.fromJson(json, _filePath, isFavorite);
       }).toList());
+      saveDataOffline(books);
     } else {
-      throw Exception('Falha em iniciar os livros.');
+      getDataOffline();
     }
   }
 
-  Future<void> downloadAndSaveEpub(Book book) async {
+  Future<void> saveDataOffline(List<Book> books) async {
+    final booksJson = json.encode(books);
+    Store.saveString("books", booksJson);
+  }
+
+  Future<void> getDataOffline() async {
+    var _filePath = await getApplicationDocumentsDirectory();
+    final String booksString = await Store.getString("books");
+    final List decode = json.decode(booksString) as List;
+    _books = await Future.wait(decode.map((json) async {
+      var isFavorite = await Store.getBool(json['title']);
+      return Book.fromJson(
+        json,
+        _filePath,
+        isFavorite,
+      );
+    }).toList());
+  }
+
+  Future<void> downloadEpub(Book book) async {
     final response = await http.get(Uri.parse(book.downloadUrl));
     final documentsDirectory = await getApplicationDocumentsDirectory();
     if (response.statusCode == 200) {
