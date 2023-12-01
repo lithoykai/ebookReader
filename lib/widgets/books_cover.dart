@@ -18,13 +18,9 @@ class BooksCover extends StatefulWidget {
 
 class _BooksCoverState extends State<BooksCover> {
   bool loadingDownload = false;
-  bool isEpubDownloaded(String downloadUrl) {
-    bool haveBook = widget.book.localSaved?.existsSync() ?? false;
-    if (haveBook) {
-      haveBook = widget.book.localSaved!.path
-          .endsWith('${widget.book.title.replaceAll(' ', '')}.epub');
-    }
-    return haveBook;
+
+  bool get isBookLocallySaved {
+    return widget.book.localSaved?.existsSync() == true;
   }
 
   _openEpubViewer(String path) async {
@@ -79,17 +75,21 @@ class _BooksCoverState extends State<BooksCover> {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () async {
-        if (widget.book.localSaved?.path == null) {
-          setState(() {
-            loadingDownload = true;
-          });
+        if (!isBookLocallySaved) {
+          if (mounted) {
+            setState(() {
+              loadingDownload = true;
+            });
+          }
           try {
             await Provider.of<BookRepository>(context, listen: false)
                 .downloadEpub(widget.book);
           } finally {
-            setState(() {
-              loadingDownload = false;
-            });
+            if (mounted) {
+              setState(() {
+                loadingDownload = false;
+              });
+            }
           }
         } else {
           _openEpubViewer(widget.book.localSaved!.path);
@@ -112,7 +112,7 @@ class _BooksCoverState extends State<BooksCover> {
                       widget.book.coverUrl,
                     ),
                     fit: BoxFit.fill,
-                    colorFilter: widget.book.hasLocal()
+                    colorFilter: isBookLocallySaved
                         ? null
                         : ColorFilter.mode(
                             Colors.black.withOpacity(0.5),
@@ -144,10 +144,12 @@ class _BooksCoverState extends State<BooksCover> {
                       right: 0,
                       left: 0,
                       child: Center(
-                          child: CircularProgressIndicator(
-                        color: Colors.blue,
-                      )))
-                  : const SizedBox()
+                        child: CircularProgressIndicator(
+                          color: Colors.blue,
+                        ),
+                      ),
+                    )
+                  : const SizedBox(),
             ],
           ),
           const SizedBox(
