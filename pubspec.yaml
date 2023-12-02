@@ -41,6 +41,7 @@ dependencies:
   vocsy_epub_viewer: ^2.0.0
   shared_preferences: ^2.2.2
   cached_network_image: ^3.3.0
+  connectivity_plus: ^5.0.2
 
 dev_dependencies:
   flutter_launcher_icons: "^0.13.1"

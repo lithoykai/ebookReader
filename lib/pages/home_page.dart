@@ -59,11 +59,11 @@ class _HomePageState extends State<HomePage> {
               Expanded(
                 child: FutureBuilder(
                   future: Provider.of<BookRepository>(context, listen: false)
-                      .fetchAllBooks(),
-                  builder: (context, snapashot) {
-                    if (snapashot.connectionState == ConnectionState.waiting) {
+                      .initFetchBooks(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
                       return const Center(child: CircularProgressIndicator());
-                    } else if (snapashot.error != null) {
+                    } else if (snapshot.error != null) {
                       return const Center(
                         child: Text('Ocorreu um erro!'),
                       );

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:ebooks/models/book.dart';
@@ -108,9 +109,12 @@ class _BooksCoverState extends State<BooksCover> {
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
                   image: DecorationImage(
-                    image: CachedNetworkImageProvider(
-                      widget.book.coverUrl,
-                    ),
+                    image: widget.book.coverImagePath == null
+                        ? CachedNetworkImageProvider(
+                            widget.book.coverUrl,
+                          )
+                        : FileImage(File(widget.book.coverImagePath ?? ''))
+                            as ImageProvider,
                     fit: BoxFit.fill,
                     colorFilter: isBookLocallySaved
                         ? null

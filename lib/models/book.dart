@@ -11,18 +11,19 @@ class Book with ChangeNotifier {
   String downloadUrl;
   bool isFavorite = false;
   File? localSaved;
+  String? coverImagePath;
   Map<String, dynamic>? locator;
 
-  Book({
-    required this.id,
-    required this.title,
-    required this.author,
-    required this.coverUrl,
-    required this.downloadUrl,
-    this.isFavorite = false,
-    this.localSaved,
-    this.locator,
-  });
+  Book(
+      {required this.id,
+      required this.title,
+      required this.author,
+      required this.coverUrl,
+      required this.downloadUrl,
+      this.isFavorite = false,
+      this.localSaved,
+      this.locator,
+      this.coverImagePath});
 
   void _toggleFavorite() {
     isFavorite = !isFavorite;
@@ -51,10 +52,8 @@ class Book with ChangeNotifier {
   }
 
   factory Book.fromJson(
-    Map<String, dynamic> json,
-    Directory filePath,
-    bool? isFavorite,
-  ) {
+      Map<String, dynamic> json, Directory filePath, bool? isFavorite,
+      {String? coverImagePath}) {
     String filename = json['title'];
 
     File file = File('${filePath.path}/${filename.replaceAll(' ', '')}.epub');
@@ -66,6 +65,7 @@ class Book with ChangeNotifier {
       downloadUrl: json['download_url'] ?? '',
       localSaved: file.existsSync() ? file : null,
       isFavorite: isFavorite ?? false,
+      coverImagePath: coverImagePath,
     );
   }
 

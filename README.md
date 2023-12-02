@@ -24,6 +24,8 @@ eBook Reader é um aplicativo de leitura de ebooks desenvolvido em Flutter, prop
 
 - cached_network_image: Utilizei o Cached Network Image para salvar as imagens em cache, deixando o aplicativo um pouco mais rápido. 
 
+- connectivity_plus: Utilizei o Connectivity Plus para poder averiguar a conexão do usuário, fazendo a troca entre utilizar dados online ou offline. 
+
 ## Como utilizar o aplicativo
 
 1.  **Baixe o Aplicativo**: Baixe o aplicativo no release e instale-o em seu dispositivo.
